@@ -338,70 +338,76 @@ const tickets = {
     }
   });
 
-  function confirmarAsistencia() {
-    const nombre = document.getElementById('guestName').value.trim();
-    const respuesta = document.getElementById('respuestaAsistencia').value;
-    const mensaje = document.getElementById('mensajeConfirmacion');
-    const seleccionBoletos = document.getElementById('seleccionBoletos');
-    const selectCantidad = document.getElementById('cantidadBoletos');
-    const key = normalize(nombre);
+function confirmarAsistencia() {
+  const nombre = document.getElementById('guestName').value.trim();
+  const respuesta = document.getElementById('respuestaAsistencia').value;
+  const mensaje = document.getElementById('mensajeConfirmacion');
+  const seleccionBoletos = document.getElementById('seleccionBoletos');
+  const selectCantidad = document.getElementById('cantidadBoletos');
+  const key = normalize(nombre);
+  const max = tickets[key] || 1;
 
-    mensaje.textContent = '';
-    mensaje.style.color = '#991b1b';
+  mensaje.textContent = '';
+  mensaje.style.color = '#991b1b';
 
-    if (!nombre || !respuesta) {
-      mensaje.textContent = 'Por favor llena todos los campos.';
+  if (!nombre || !respuesta) {
+    mensaje.textContent = 'Por favor llena todos los campos.';
+    return;
+  }
+
+  if (respuesta === 'asistire') {
+    if (max === 1) {
+      seleccionBoletos.classList.add('hidden');
+      mensaje.style.color = '#4a148c';
+      mensaje.textContent = `¡Gracias, ${nombre}! Te esperamos con mucha ilusión. Has confirmado 1 boleto. 💜✨`;
+
+      // WhatsApp
+      const msg = `Hola, soy ${nombre}. Confirmo mi asistencia a los XV años de Karol Irasema. Usaré 1 boleto. ¡Gracias por la invitación! 💜✨`;
+      const phone = '525584702561';
+      const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(whatsappUrl, '_blank');
+
       return;
     }
 
-if (respuesta === 'asistire') {
-  const max = tickets[key] || 1;
+    // Si tiene más de 1 boleto y aún no ha seleccionado cantidad
+    if (seleccionBoletos.classList.contains('hidden')) {
+      selectCantidad.innerHTML = '';
+      for (let i = 1; i <= max; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${i} boleto${i > 1 ? 's' : ''}`;
+        selectCantidad.appendChild(option);
+      }
+      seleccionBoletos.classList.remove('hidden');
+      mensaje.textContent = 'Selecciona cuántos boletos usarás.';
+      return;
+    }
 
-  if (max === 1) {
-    // No mostrar selección, ya que solo tiene 1 boleto
-    seleccionBoletos.classList.add('hidden');
+    // Ya se seleccionó cantidad
+    const cantidad = selectCantidad.value;
     mensaje.style.color = '#4a148c';
-    mensaje.textContent = `¡Gracias, ${nombre}! Te esperamos con mucha ilusión. Has confirmado 1 boleto. 💜✨`;
+    mensaje.textContent = `¡Gracias, ${nombre}! Te esperamos con mucha ilusión. Has confirmado ${cantidad} boleto(s). 💜✨`;
 
     // WhatsApp
-    const msg = `Hola, soy ${nombre}. Confirmo mi asistencia a los XV años de Karol Irasema. Usaré 1 boleto. ¡Gracias por la invitación! 💜✨`;
-    const phone = '52XXXXXXXXXX'; // <--- Reemplaza con tu número real sin espacios, con lada de México (ej: 5215512345678)
+    const msg = `Hola, soy ${nombre}. Confirmo mi asistencia a los XV años de Karol Irasema. Usaré ${cantidad} boleto(s). ¡Gracias por la invitación! 💜✨`;
+    const phone = '525584702561';
     const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
     window.open(whatsappUrl, '_blank');
 
-    return;
-  }
+  } else {
+    mensaje.style.color = '#4a148c';
+    mensaje.textContent = `Lamentamos que no puedas acompañarnos, ${nombre}. ¡Gracias por avisar!`;
 
-  // Si tiene más de 1 boleto y aún no ha seleccionado cantidad
-  if (seleccionBoletos.classList.contains('hidden')) {
-    selectCantidad.innerHTML = '';
-    for (let i = 1; i <= max; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = `${i} boleto${i > 1 ? 's' : ''}`;
-      selectCantidad.appendChild(option);
-    }
-    seleccionBoletos.classList.remove('hidden');
-    mensaje.textContent = 'Selecciona cuántos boletos usarás.';
-    return;
-  }
+    // WhatsApp para rechazar la invitación
+    const msg = `Hola, soy ${nombre}. Lamento no poder asistir a los XV años de Karol Irasema. Les deseo una hermosa celebración. 💜✨`;
+    const phone = '525584702561';
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(whatsappUrl, '_blank');
 
-  // Ya se seleccionó cantidad
-  const cantidad = selectCantidad.value;
-  mensaje.style.color = '#4a148c';
-  mensaje.textContent = `¡Gracias, ${nombre}! Te esperamos con mucha ilusión. Has confirmado ${cantidad} boleto(s). 💜✨`;
-
-  // WhatsApp
-  const msg = `Hola, soy ${nombre}. Confirmo mi asistencia a los XV años de Karol Irasema. Usaré ${cantidad} boleto(s). ¡Gracias por la invitación!`;
-  const phone = '525584702561'; // <--- Reemplaza con tu número real sin espacios
-  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-  window.open(whatsappUrl, '_blank');
-} else {
-      mensaje.style.color = '#4a148c';
-      mensaje.textContent = `Lamentamos que no puedas acompañarnos, ${nombre}. ¡Gracias por avisar!`;
-      seleccionBoletos.classList.add('hidden');
-    }
+    seleccionBoletos.classList.add('hidden');
   }
+}
 </script>
 
 
